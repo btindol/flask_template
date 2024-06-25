@@ -14,17 +14,18 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      run: echo "Checked out code successfully"
 
     - name: Set up Azure CLI
-      uses: azure/setup-cli@v1
-      run: echo "Azure CLI setup successful"
+      uses: azure/CLI@v1
+      run: |
+        echo "Azure CLI installed"
 
     - name: Login to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-      run: echo "Logged in to Azure successfully"
+      run: |
+        echo "Azure Login Done"
 
     - name: Build and push Docker image
       run: |
