@@ -1,0 +1,43 @@
+name: Build and Push Docker Image to ACR
+
+on:    
+  push:    
+    branches:    
+      - main    
+    
+jobs:    
+  build-and-push:    
+    runs-on: ubuntu-latest    
+    environment: container-app-deploy
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Azure CLI
+      uses: azure/setup-azure-cli@v1
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Build and push Docker image
+      run: |
+        ACR_NAME=acaalbumsbtindol
+        API_NAME=album-api
+        az acr build --registry $ACR_NAME --image $API_NAME .
+
+    - name: Create container app environment
+      run: |
+        ENVIRONMENT_NAME=env-album-containerapps
+        RESOURCE_GROUP=album-containerapps
+        LOCATION=canadacentral
+        az containerapp env create --name $ENVIRONMENT_NAME --resource-group $RESOURCE_GROUP --location $LOCATION
+
+    - name: Deploy image to container app
+      run: |
+        API_NAME=album-api
+        ENVIRONMENT_NAME=env-album-containerapps
+        RESOURCE_GROUP=album-containerapps
+        ACR_NAME=acaalbumsbtindol
+        az containerapp create --name $API_NAME --resource-group $RESOURCE_GROUP --environment $ENVIRONMENT_NAME --image "$ACR_NAME.azurecr.io/$API_NAME" --target-port 8080 --ingress external --registry-server "$ACR_NAME.azurecr.io"
