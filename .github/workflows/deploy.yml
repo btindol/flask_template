@@ -17,6 +17,9 @@ jobs:
 
     - name: Set up Azure CLI
       uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          echo "Azure CLI setup complete"
 
     - name: Login to Azure
       uses: azure/login@v1
@@ -25,9 +28,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        ACR_NAME=acaalbumsbtindol
-        API_NAME=album-api
-        az acr build --registry $ACR_NAME --image $API_NAME .
+        az acr build --registry acaalbumsbtindol --image album-api .
 
     - name: Create container app environment
       run: |
