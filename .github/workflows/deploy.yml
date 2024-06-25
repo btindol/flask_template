@@ -17,30 +17,22 @@ jobs:
 
     - name: Set up Azure CLI
       uses: azure/CLI@v1
-      run: |
-        echo "Azure CLI installed"
 
     - name: Login to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-      run: |
-        echo "Azure Login Done"
 
     - name: Build and push Docker image
       run: |
-        echo "Building and pushing Docker image to ACR: acaalbumsbtindol"
-        az acr build --registry acaalbumsbtindol --image album-api .
-        echo "Docker image built and pushed successfully"
+        ACR_NAME=acaalbumsbtindol
+        API_NAME=album-api
+        az acr build --registry $ACR_NAME --image $API_NAME .
 
     - name: Create container app environment
       run: |
-        echo "Creating container app environment: env-album-containerapps in resource group: album-containerapps"
         az containerapp env create --name env-album-containerapps --resource-group album-containerapps --location canadacentral
-        echo "Container app environment created successfully"
 
     - name: Deploy image to container app
       run: |
-        echo "Deploying image to container app: album-api in resource group: album-containerapps"
         az containerapp create --name album-api --resource-group album-containerapps --environment env-album-containerapps --image "acaalbumsbtindol.azurecr.io/album-api" --target-port 8080 --ingress external --registry-server "acaalbumsbtindol.azurecr.io"
-        echo "Image deployed to container app successfully"
