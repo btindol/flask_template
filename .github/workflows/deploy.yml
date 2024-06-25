@@ -1,20 +1,21 @@
-name: Build and Push Docker Image to ACR
+name: Deploy to Azure
 
-on:    
-  push:    
-    branches:    
-      - main    
-    
-jobs:    
-  build-and-push:    
-    runs-on: ubuntu-latest    
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
     environment: container-app-deploy
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Set up Azure CLI
-      uses: azure/setup-azure-cli@v1
+      uses: azure/cli@v1
 
     - name: Login to Azure
       uses: azure/login@v1
