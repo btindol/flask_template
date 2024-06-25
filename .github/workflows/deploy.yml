@@ -14,32 +14,32 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      run: echo "Checked out code successfully"
 
     - name: Set up Azure CLI
       uses: azure/setup-cli@v1
+      run: echo "Azure CLI setup successful"
 
     - name: Login to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+      run: echo "Logged in to Azure successfully"
 
     - name: Build and push Docker image
       run: |
-        ACR_NAME=acaalbumsbtindol
-        API_NAME=album-api
-        az acr build --registry $ACR_NAME --image $API_NAME .
+        echo "Building and pushing Docker image to ACR: acaalbumsbtindol"
+        az acr build --registry acaalbumsbtindol --image album-api .
+        echo "Docker image built and pushed successfully"
 
     - name: Create container app environment
       run: |
-        ENVIRONMENT_NAME=env-album-containerapps
-        RESOURCE_GROUP=album-containerapps
-        LOCATION=canadacentral
-        az containerapp env create --name $ENVIRONMENT_NAME --resource-group $RESOURCE_GROUP --location $LOCATION
+        echo "Creating container app environment: env-album-containerapps in resource group: album-containerapps"
+        az containerapp env create --name env-album-containerapps --resource-group album-containerapps --location canadacentral
+        echo "Container app environment created successfully"
 
     - name: Deploy image to container app
       run: |
-        API_NAME=album-api
-        ENVIRONMENT_NAME=env-album-containerapps
-        RESOURCE_GROUP=album-containerapps
-        ACR_NAME=acaalbumsbtindol
-        az containerapp create --name $API_NAME --resource-group $RESOURCE_GROUP --environment $ENVIRONMENT_NAME --image "$ACR_NAME.azurecr.io/$API_NAME" --target-port 8080 --ingress external --registry-server "$ACR_NAME.azurecr.io"
+        echo "Deploying image to container app: album-api in resource group: album-containerapps"
+        az containerapp create --name album-api --resource-group album-containerapps --environment env-album-containerapps --image "acaalbumsbtindol.azurecr.io/album-api" --target-port 8080 --ingress external --registry-server "acaalbumsbtindol.azurecr.io"
+        echo "Image deployed to container app successfully"
